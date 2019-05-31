@@ -1,6 +1,6 @@
 import abc
 import logging
-from functools import wraps
+from functools import partial, wraps
 
 from sceptre.helpers import _call_func_on_values
 
@@ -91,7 +91,10 @@ def execute_hooks(hooks):
                 hook.run()
 
 
-def add_stack_hooks(func):
+def add_stack_hooks(func=None, hook_name=None):
+    if func is None:
+        return partial(add_stack_hooks, hook_name=hook_name)
+
     """
     A function decorator to trigger the before and after hooks, relative
     to the decorated function's name.
@@ -100,9 +103,11 @@ def add_stack_hooks(func):
     """
     @wraps(func)
     def decorated(self, *args, **kwargs):
-        execute_hooks(self.stack.hooks.get("before_" + func.__name__))
+        name = func.__name__ if hook_name is None else hook_name
+
+        execute_hooks(self.stack.hooks.get("before_" + name))
         response = func(self, *args, **kwargs)
-        execute_hooks(self.stack.hooks.get("after_" + func.__name__))
+        execute_hooks(self.stack.hooks.get("after_" + name))
 
         return response
 

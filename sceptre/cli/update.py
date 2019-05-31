@@ -54,27 +54,36 @@ def update_command(ctx, path, change_set, verbose, yes):
 
     if change_set:
         change_set_name = "-".join(["change-set", uuid1().hex])
+        delete_change_set = True
         plan.create_change_set(change_set_name)
         try:
             # Wait for change set to be created
-            status = plan.wait_for_cs_completion(change_set_name)
+            result = plan.wait_for_cs_completion(change_set_name)
+            status = next(iter(result.values()))
+
+            if status == StackChangeSetStatus.NO_CHANGES:
+                write("No changes detected")
 
             # Exit if change set fails to create
-            if status != StackChangeSetStatus.READY:
+            elif status != StackChangeSetStatus.READY:
                 exit(1)
 
-            # Describe changes
-            description = plan.describe_change_set(change_set_name)
-            if not verbose:
-                description = simplify_change_set_description(description)
-            write(description, context.output_format)
+            else:
+                # Describe changes
+                description_dict = plan.describe_change_set(change_set_name)
+                description = next(iter(description_dict.values()))
+                if not verbose:
+                    description = simplify_change_set_description(description)
+                write(description, context.output_format)
 
-            # Execute change set if happy with changes
-            if yes or click.confirm("Proceed with stack update?"):
-                plan.execute_change_set(change_set_name)
+                # Execute change set if happy with changes
+                if yes or click.confirm("Proceed with stack update?"):
+                    res = plan.execute_change_set(change_set_name)
+                    delete_change_set = False
         finally:
-            # Clean up by deleting change set
-            plan.delete_change_set(change_set_name)
+            if delete_change_set:
+                # Clean up by deleting change set
+                plan.delete_change_set(change_set_name)
     else:
         confirmation("update", yes, command_path=path)
         responses = plan.update()

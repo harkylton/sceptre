@@ -512,6 +512,7 @@ class StackActions(object):
             }
         )
 
+    #@add_stack_hooks(hook_name='update')
     def execute_change_set(self, change_set_name):
         """
         Executes the Change Set ``change_set_name``.
@@ -535,6 +536,7 @@ class StackActions(object):
         )
 
         status = self._wait_for_completion()
+
         return status
 
     def list_change_sets(self):
@@ -846,6 +848,11 @@ class StackActions(object):
                 cs_exec_status in ["UNAVAILABLE", "AVAILABLE"]
         ):
             return StackChangeSetStatus.PENDING
+        elif (
+            cs_status == "FAILED" and
+            "didn't contain changes" in cs_description["StatusReason"]
+        ):
+            return StackChangeSetStatus.NO_CHANGES
         elif (
                 cs_status in ["DELETE_COMPLETE", "FAILED"] or
                 cs_exec_status in [
