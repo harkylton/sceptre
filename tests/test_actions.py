@@ -28,7 +28,7 @@ class TestStackActions(object):
         )
         self.mock_ConnectionManager = self.patcher_connection_manager.start()
         self.stack = Stack(
-            name=sentinel.stack_name, project_code=sentinel.project_code,
+            name='prod/app/stack', project_code=sentinel.project_code,
             template_path=sentinel.template_path, region=sentinel.region,
             profile=sentinel.profile, parameters={"key1": "val1"},
             sceptre_user_data=sentinel.sceptre_user_data, hooks={},
@@ -99,7 +99,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [sentinel.notification],
                 "Tags": [
@@ -132,7 +134,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [],
                 "Tags": [
@@ -164,7 +168,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [sentinel.notification],
                 "Tags": [
@@ -192,7 +198,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [sentinel.notification],
                 "Tags": [
@@ -224,7 +232,9 @@ class TestStackActions(object):
                         "ParameterKey": "key1",
                         "ParameterValue": "val1"
                     }],
-                    "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                    "Capabilities": ['CAPABILITY_IAM',
+                                     'CAPABILITY_NAMED_IAM',
+                                     'CAPABILITY_AUTO_EXPAND'],
                     "RoleARN": sentinel.role_arn,
                     "NotificationARNs": [sentinel.notification],
                     "Tags": [
@@ -262,7 +272,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [],
                 "Tags": [
@@ -554,7 +566,7 @@ class TestStackActions(object):
             }
         )
 
-        assert response == {sentinel.stack_name: '{}'}
+        assert response == {'prod/app/stack': '{}'}
 
     def test_create_change_set_sends_correct_request(self):
         self.template._body = sentinel.template
@@ -570,7 +582,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "ChangeSetName": sentinel.change_set_name,
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [sentinel.notification],
@@ -598,7 +612,9 @@ class TestStackActions(object):
                     "ParameterKey": "key1",
                     "ParameterValue": "val1"
                 }],
-                "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+                "Capabilities": ['CAPABILITY_IAM',
+                                 'CAPABILITY_NAMED_IAM',
+                                 'CAPABILITY_AUTO_EXPAND'],
                 "ChangeSetName": sentinel.change_set_name,
                 "RoleARN": sentinel.role_arn,
                 "NotificationARNs": [],

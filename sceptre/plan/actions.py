@@ -59,7 +59,7 @@ class StackActions(object):
         create_stack_kwargs = {
             "StackName": self.stack.external_name,
             "Parameters": self._format_parameters(self.stack.parameters),
-            "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+            "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
             "NotificationARNs": self.stack.notifications,
             "Tags": [
                 {"Key": str(k), "Value": str(v)}
@@ -111,7 +111,7 @@ class StackActions(object):
         update_stack_kwargs = {
             "StackName": self.stack.external_name,
             "Parameters": self._format_parameters(self.stack.parameters),
-            "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+            "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
             "NotificationARNs": self.stack.notifications,
             "Tags": [
                 {"Key": str(k), "Value": str(v)}
@@ -198,7 +198,6 @@ class StackActions(object):
                     status = StackStatus.COMPLETE
                 else:
                     raise
-            status = status
         elif existing_status.endswith("IN_PROGRESS"):
             self.logger.info(
                 "%s - Stack action is already in progress state and cannot "
@@ -263,7 +262,7 @@ class StackActions(object):
         policy_path = path.join(
             # need to get to the base install path. __file__ will take us into
             # sceptre/actions so need to walk up the path.
-            path.abspath(path.join(__file__, "../..")),
+            path.abspath(path.join(__file__, "..", "..")),
             "stack_policies/lock.json"
         )
         self.set_policy(policy_path)
@@ -276,7 +275,7 @@ class StackActions(object):
         policy_path = path.join(
             # need to get to the base install path. __file__ will take us into
             # sceptre/actions so need to walk up the path.
-            path.abspath(path.join(__file__, "../..")),
+            path.abspath(path.join(__file__, "..", "..")),
             "stack_policies/unlock.json"
         )
         self.set_policy(policy_path)
@@ -368,10 +367,9 @@ class StackActions(object):
         UPDATE_ROLLBACK_COMPLETE.
         """
         self.logger.debug("%s - Continuing update rollback", self.stack.name)
-        continue_update_rollback_kwargs = \
-            {
-                "StackName": self.stack.external_name
-            }
+        continue_update_rollback_kwargs = {
+            "StackName": self.stack.external_name
+        }
         continue_update_rollback_kwargs.update(self._get_role_arn())
         self.connection_manager.call(
             service="cloudformation",
@@ -439,7 +437,7 @@ class StackActions(object):
         create_change_set_kwargs = {
             "StackName": self.stack.external_name,
             "Parameters": self._format_parameters(self.stack.parameters),
-            "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+            "Capabilities": ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
             "ChangeSetName": change_set_name,
             "NotificationARNs": self.stack.notifications,
             "Tags": [
@@ -544,7 +542,7 @@ class StackActions(object):
         Lists the Stack's Change Sets.
 
         :returns: The Stack's Change Sets.
-        :rtype: dict | list
+        :rtype: dict or list
         """
         self.logger.debug("%s - Listing change sets", self.stack.name)
         try:
@@ -779,7 +777,6 @@ class StackActions(object):
         ]
         for event in new_events:
             self.logger.info(" ".join([
-                event["Timestamp"].replace(microsecond=0).isoformat(),
                 self.stack.name,
                 event["LogicalResourceId"],
                 event["ResourceType"],

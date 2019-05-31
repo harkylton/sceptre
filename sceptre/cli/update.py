@@ -78,7 +78,7 @@ def update_command(ctx, path, change_set, verbose, yes):
 
                 # Execute change set if happy with changes
                 if yes or click.confirm("Proceed with stack update?"):
-                    res = plan.execute_change_set(change_set_name)
+                    plan.execute_change_set(change_set_name)
                     delete_change_set = False
         finally:
             if delete_change_set:
